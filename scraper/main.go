@@ -58,6 +58,7 @@ func main() {
 	})
 
 	err := c.Visit(url)
+	
 	if err != nil {
 		log.Fatal(err)
 	}
