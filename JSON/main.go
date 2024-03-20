@@ -15,7 +15,7 @@ type Person struct {
 func main(){
 
 	// write json into struct
-	
+
 	myJson := `
 	[
 		{
