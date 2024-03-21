@@ -24,8 +24,8 @@ func sendEmail(items []Malware) {
 	}
 
 	emailAppPassword := os.Getenv("APP_PASS")
-	yourMail := os.Getenv("APP_PASS")
-	recipient := os.Getenv("APP_PASS")
+	yourMail := os.Getenv("SENDER")
+	recipient := os.Getenv("RECIPIENT")
 	hostAddress := "smtp.mail.yahoo.com"
 	hostPort := "465"
 	mailSubject := "Malicious packages found on Snap"
