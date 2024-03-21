@@ -1,7 +1,6 @@
 package main
 
 import (
-	"crypto/tls"
 	"fmt"
 	"log"
 	"net/smtp"
@@ -26,76 +25,33 @@ func sendEmail(items []Malware) {
 	emailAppPassword := os.Getenv("APP_PASS")
 	yourMail := os.Getenv("SENDER")
 	recipient := os.Getenv("RECIPIENT")
-	hostAddress := "smtp.mail.yahoo.com"
-	hostPort := "465"
-	mailSubject := "Malicious packages found on Snap"
-	mailBody := fmt.Sprintf("Please review the following packages: %v \n", items)
-	fullServerAddress := hostAddress + ":" + hostPort
-
-	headerMap := make(map[string]string)
-	headerMap["From"] = yourMail
-	headerMap["To"] = recipient
-	headerMap["Subject"] = mailSubject
-	mailMessage := ""
-	for k, v := range headerMap {
-		mailMessage += fmt.Sprintf("%s: %s\\r", k, v)
-	}
-	mailMessage += "\\r" + mailBody
+	hostAddress := "smtp.gmail.com"
 
 	authenticate := smtp.PlainAuth("", yourMail, emailAppPassword, hostAddress)
-	tlsConfigurations := &tls.Config{
-		InsecureSkipVerify: true,
-		ServerName:         hostAddress,
+	// tlsConfigurations := &tls.Config{
+	// 	InsecureSkipVerify: true,
+	// 	ServerName:         hostAddress,
+	// }
+
+	var body string
+	for _, item := range items{
+		body += fmt.Sprintf("%v: %v\n\n", item.title, item.link)
 	}
+	to := []string{recipient}
 
-	conn, err := tls.Dial("tcp", fullServerAddress, tlsConfigurations)
+	msg := []byte(fmt.Sprintf("To: %v\r\n"+
 
-	if err != nil {
-		log.Panic(err)
-	}
+		"Subject: Malicious packages found on Snap\r\n"+
 
-	newClient, err := smtp.NewClient(conn, hostAddress)
+		"\r\n"+
 
-	if err != nil {
-		log.Panic(err)
-	}
+		"Please review the following packages: \n%v\r\n", recipient, body))
 
-	// Auth
-	if err = newClient.Auth(authenticate); err != nil {
-		log.Panic(err)
-	}
+	error := smtp.SendMail("smtp.gmail.com:587", authenticate, yourMail, to, msg)
 
-	// To && From
-	if err = newClient.Mail(yourMail); err != nil {
-		log.Panic(err)
-	}
+	if error != nil {
 
-	if err = newClient.Rcpt(headerMap["To"]); err != nil {
-		log.Panic(err)
-	}
-
-	// Data
-	writer, err := newClient.Data()
-	if err != nil {
-		log.Panic(err)
-	}
-
-	_, err = writer.Write([]byte(mailMessage))
-
-	if err != nil {
-		log.Panic(err)
-	}
-
-	err = writer.Close()
-
-	if err != nil {
-		log.Panic(err)
-	}
-
-	err = newClient.Quit()
-
-	if err != nil {
-		fmt.Println("THERE WAS AN ERROR")
+		log.Fatal(err)
 	}
 
 	fmt.Println("Successful, the mail was sent!")
