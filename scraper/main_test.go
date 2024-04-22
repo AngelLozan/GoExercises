@@ -1,55 +1,54 @@
-    package main
+package main
 
-		import (
-			"testing"
-			"github.com/gocolly/colly/v2"
-		)
+import (
+	"testing"
 
-		func TestVisitURLAndLogVisit(t *testing.T) {
+	"github.com/gocolly/colly/v2"
+)
 
-			c := colly.NewCollector()
+func TestVisitURLAndLogVisit(t *testing.T) {
 
-			url := "https://snapcraft.io/search?q=exodus"
+	c := colly.NewCollector()
 
-			var visitedURL string
+	url := "https://snapcraft.io/search?q=exodus"
 
-			c.OnRequest(func(r *colly.Request) {
-				visitedURL = r.URL.String()
-			})
+	var visitedURL string
 
-			err := c.Visit(url)
-			if err != nil {
-				t.Fatal(err)
-			}
+	c.OnRequest(func(r *colly.Request) {
+		visitedURL = r.URL.String()
+	})
 
-			expectedURL := "https://snapcraft.io/search?q=exodus"
-			if visitedURL != expectedURL {
-				t.Errorf("Visited URL does not match expected URL. Got: %s, Expected: %s", visitedURL, expectedURL)
-			}
-		}
+	err := c.Visit(url)
+	if err != nil {
+		t.Fatal(err)
+	}
 
+	expectedURL := "https://snapcraft.io/search?q=exodus"
+	if visitedURL != expectedURL {
+		t.Errorf("Visited URL does not match expected URL. Got: %s, Expected: %s", visitedURL, expectedURL)
+	}
+}
 
 func TestInvalidURLAndLogError(t *testing.T) {
 
-  c := colly.NewCollector()
+	c := colly.NewCollector()
 
-  url := "https://invalidurl"
+	url := "https://invalidurl"
 
-  var errorMessage string
+	var errorMessage string
 
-  c.OnError(func(r *colly.Response, e error) {
-    errorMessage = e.Error()
-  })
+	c.OnError(func(r *colly.Response, e error) {
+		errorMessage = e.Error()
+	})
 
-  err := c.Visit(url)
+	err := c.Visit(url)
 
-  if err == nil {
-    t.Error("Expected an error to occur, but got nil")
-  }
+	if err == nil {
+		t.Error("Expected an error to occur, but got nil")
+	}
 
-  expectedErrorMessage := "Get \"https://invalidurl\": dial tcp: lookup invalidurl: no such host"
-  if errorMessage != expectedErrorMessage {
-    t.Errorf("Error message does not match expected error message. Got: %s, Expected: %s", errorMessage, expectedErrorMessage)
-  }
+	expectedErrorMessage := "Get \"https://invalidurl\": dial tcp: lookup invalidurl: no such host"
+	if errorMessage != expectedErrorMessage {
+		t.Errorf("Error message does not match expected error message. Got: %s, Expected: %s", errorMessage, expectedErrorMessage)
+	}
 }
-
