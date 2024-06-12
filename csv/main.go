@@ -509,7 +509,7 @@ func main() {
 	entityStatusMap := make(map[string][]string)
 
 	for _, record := range records {
-		entityStatusMap[record.Entity] = append(entityStatusMap[record.Entity], record.Name)
+		entityStatusMap[record.Entity] = append(entityStatusMap[record.Entity], record.Name, record.Category)
 	}
 
 	// Write each entity's statuses to the CSV file
